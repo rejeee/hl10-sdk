@@ -78,4 +78,6 @@ uint8_t RadioCheckLDR(uint8_t lowRate, uint8_t sf, uint8_t bw);
  */
 int RadioDecodeAt(uint8_t *buf, uint32_t size, uint32_t *addr);
 
+void RadioLBTLog(uint8_t chan, int rssi);
+
 #endif

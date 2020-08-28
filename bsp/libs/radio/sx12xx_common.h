@@ -94,6 +94,7 @@ typedef struct
 {
   LoRaSettings_t    LoRa;
   FskSettings_t     Fsk;
+  uint32_t          rxtimeout;
   uint32_t          freq;
   uint32_t          syncword;
   uint32_t          preamb : 16;  /* RadioOpMode_t */

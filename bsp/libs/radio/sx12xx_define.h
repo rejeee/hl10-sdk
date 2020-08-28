@@ -115,7 +115,6 @@ typedef struct
     uint32_t    bw;         /**< FSK: >= 2600 and <= 250000 Hz */
     uint32_t    bwafc;      /**< FSK: >= 2600 and <= 250000 Hz */
     uint32_t    dr;         /**< FSK: 600..300000 bits/s */
-    uint32_t    rxtimeout;
 } FskSettings_t;
 
 #endif

@@ -135,6 +135,25 @@ bool AppMacTask(void)
     return success;
 }
 
+bool RadioWaitDone(uint8_t spiIdx, SemIndex_t semIdx, uint32_t timeout)
+{
+    bool success = false;
+
+    /* wait for rxdone or timeout interrupt, timeout is same with tx */
+    success = BSP_OS_SemWait(&gIRQSem, timeout);
+
+    return success;
+}
+
+bool RadioSemClear(uint8_t spiIdx, SemIndex_t semIdx)
+{
+    bool success = false;
+
+    success = BSP_OS_SemReset(&gIRQSem);
+
+    return success;
+}
+
 uint32_t AT_TxFreq(uint32_t freq, uint8_t *buf, uint32_t len)
 {
     uint32_t status = 0;

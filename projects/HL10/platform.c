@@ -105,6 +105,8 @@ static void UserInitGPIO(void)
     gpioCfg.enPd = GpioPdEnable;
     Gpio_Init(UNUSED_GPIO, UNUSED_PIN, &gpioCfg);
 
+    Gpio_Init(GpioPortA, GpioPin2, &gpioCfg);
+    Gpio_Init(GpioPortB, GpioPin1, &gpioCfg);
     /* Hardware version */
     Gpio_Init(UPA_GPIO, UPA_PIN, &gpioCfg);
     Gpio_Init(GpioPortB, GpioPin4, &gpioCfg);
@@ -143,6 +145,11 @@ void PortB_IRQHandler(void)
 void RadioDelay(uint32_t ms)
 {
     osDelayMs(ms);
+}
+
+void RadioDelayUs(uint32_t us)
+{
+    BSP_ClockdelayUs(us);
 }
 
 /**
