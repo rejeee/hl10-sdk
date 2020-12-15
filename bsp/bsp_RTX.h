@@ -61,12 +61,13 @@ extern "C" {
 * Data Types
 ********************************************************************************
 */
-typedef osThreadId              BSP_OS_THREAD;
-typedef osSemaphoreId           BSP_OS_SEM;
-typedef osMutexId               BSP_OS_MUTEX;
-typedef osPoolId                BSP_OS_MPOOL;
-typedef osMessageQId            BSP_OS_MQ;
-typedef osThreadId              BSP_OS_FLAG;
+typedef struct TimerEvent_s
+{
+    const osTimerDef_t *name;
+    osTimerId   id;         /**< Timer ID */
+    uint32_t    reload;     /**< Timer reload value */
+    uint32_t    repeat : 1;   /* repeating timer */
+}TimerEvent_t;
 
 #if (osFeature_Pool == DEF_ENABLED)
 typedef struct {
@@ -93,7 +94,7 @@ bool BSP_OS_TaskCreate(osThreadId *ptr, const osThreadDef_t *def, void *argument
  * @return  true  if the semaphore was created.
  *          false if the semaphore could not be created.
  */
-bool BSP_OS_SemCreate(BSP_OS_SEM *p_sem, int32_t count, const osSemaphoreDef_t *def);
+bool BSP_OS_SemCreate(osSemaphoreId *p_sem, int32_t count, const osSemaphoreDef_t *def);
 
 /**
  * @brief Wait on a semaphore to become available
@@ -104,7 +105,7 @@ bool BSP_OS_SemCreate(BSP_OS_SEM *p_sem, int32_t count, const osSemaphoreDef_t *
  * @return  true  if the semaphore was acquire.
  *          false if the semaphore could not be acquire.
  */
-bool BSP_OS_SemWait(const BSP_OS_SEM *p_sem, uint32_t dly_ms);
+bool BSP_OS_SemWait(const osSemaphoreId *p_sem, uint32_t dly_ms);
 
 /**
  * @brief Post a semaphore
@@ -114,7 +115,7 @@ bool BSP_OS_SemWait(const BSP_OS_SEM *p_sem, uint32_t dly_ms);
  * @return  true  if the semaphore was posted.
  *          false if the semaphore could not be posted.
  */
-bool BSP_OS_SemPost(const BSP_OS_SEM *p_sem);
+bool BSP_OS_SemPost(const osSemaphoreId *p_sem);
 
 /**
  * @brief This function creates a mutex.
@@ -124,7 +125,7 @@ bool BSP_OS_SemPost(const BSP_OS_SEM *p_sem);
  * @return  true  if the semaphore was set.
  *          false if the semaphore could not be set.
  */
-bool BSP_OS_SemReset(const BSP_OS_SEM *p_sem);
+bool BSP_OS_SemReset(const osSemaphoreId *p_sem);
 
 /**
  * @brief This function creates a mutex.
@@ -135,7 +136,7 @@ bool BSP_OS_SemReset(const BSP_OS_SEM *p_sem);
  * @return  true  if the mutex was created.
  *          false if the mutex could not be created.
  */
-bool BSP_OS_MutexCreate(BSP_OS_MUTEX *p_mutex, const osMutexDef_t *def);
+bool BSP_OS_MutexCreate(osMutexId *p_mutex, const osMutexDef_t *def);
 
 /**
  * @brief Wait on a mutex to become available
@@ -146,7 +147,7 @@ bool BSP_OS_MutexCreate(BSP_OS_MUTEX *p_mutex, const osMutexDef_t *def);
  * @return  true  if the mutex was acquire.
  *          false if the mutex could not be acquire.
  */
-bool BSP_OS_MutexLock(const BSP_OS_MUTEX *p_mutex, uint32_t dly_ms);
+bool BSP_OS_MutexLock(const osMutexId *p_mutex, uint32_t dly_ms);
 
 /**
  * @brief Post a mutex
@@ -156,7 +157,7 @@ bool BSP_OS_MutexLock(const BSP_OS_MUTEX *p_mutex, uint32_t dly_ms);
  * @return  true  if the mutex was posted.
  *          false if the mutex could not be posted.
  */
-bool BSP_OS_MutexUnLock(const BSP_OS_MUTEX *p_mutex);
+bool BSP_OS_MutexUnLock(const osMutexId *p_mutex);
 
 #if (osFeature_MessageQ == DEF_ENABLED)
 /**
@@ -171,7 +172,7 @@ bool BSP_OS_MutexUnLock(const BSP_OS_MUTEX *p_mutex);
  * @return  true  if the queue was created.
  *          false if the queue could not be created.
  */
-bool BSP_OS_QCreate(BSP_OS_MQ *p_q, const osMessageQDef_t *def, osThreadId thread_id);
+bool BSP_OS_QCreate(osMessageQId *p_q, const osMessageQDef_t *def, osThreadId thread_id);
 
 /**
  * @brief Sends a message to a queue.
@@ -184,7 +185,7 @@ bool BSP_OS_QCreate(BSP_OS_MQ *p_q, const osMessageQDef_t *def, osThreadId threa
  * @return  true  if the queue was posted.
  *          false if the queue could not be posted.
  */
-bool BSP_OS_QPost(const BSP_OS_MQ *p_q, void *msg, int16_t msg_size);
+bool BSP_OS_QPost(const osMessageQId *p_q, void *msg, int16_t msg_size);
 
 /**
  * @brief Waits for a message to be sent to a queue.
@@ -200,7 +201,7 @@ bool BSP_OS_QPost(const BSP_OS_MQ *p_q, void *msg, int16_t msg_size);
  *                            if 'ptr' is a NULL pointer or,
  *                            if you didn't pass a pointer to a queue.
  */
-void *BSP_OS_QPend(const BSP_OS_MQ *p_q, uint32_t dly_ms, int16_t msg_size);
+void *BSP_OS_QPend(const osMessageQId *p_q, uint32_t dly_ms, int16_t msg_size);
 
 #endif
 

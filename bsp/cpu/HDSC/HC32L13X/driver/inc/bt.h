@@ -684,9 +684,9 @@ uint16_t Bt_M0_Cnt16Get(en_bt_unit_t enUnit);
 en_result_t Bt_M0_Cnt32Set(en_bt_unit_t enUnit, uint32_t u32Data);
 uint32_t Bt_M0_Cnt32Get(en_bt_unit_t enUnit);
 //翻转输出使能/禁止（低电平）设定
-en_result_t Tim3_M0_EnTOG(en_bt_unit_t enUnit, boolean_t bEnTOG);
+en_result_t Bt_M0_EnTOG_Output(en_bt_unit_t enUnit, boolean_t bEnTOG);
 //端口输出使能/禁止设定
-en_result_t Tim3_M0_Enable_Output(en_bt_unit_t enUnit, boolean_t bEnOutput);
+en_result_t Bt_M0_Enable_Output(en_bt_unit_t enUnit, boolean_t bEnOutput);
 
 
 //模式1初始化及相关功能操作

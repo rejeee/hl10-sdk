@@ -57,7 +57,7 @@ uint32_t BSP_ADC_Sample(const BSP_ADC_IDX adcIdx, uint8_t ch);
 /**
  * @brief Get cpu internal tempearature
  *
- * @param val   the value of Vsensor, unit is mV
+ * @param val   the value of Vsensor
  *
  * @return unit is 0.01 degree
  */

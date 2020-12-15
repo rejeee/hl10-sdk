@@ -78,59 +78,65 @@ void SystemCoreClockUpdate (void) // Update SystemCoreClock variable
  ** \param  none
  ** \return none
  ******************************************************************************/
-static void _HidePinInit(void)
+void System_HidePinInit(HL13xType pinType)
 {
     uint32_t tmpReg = M0P_SYSCTRL->PERI_CLKEN;
 
 	M0P_SYSCTRL->PERI_CLKEN_f.GPIO = 1;
 
-#if defined(HC32L13xKxxx)	      //64PIN MCU
-	  ///<
-#elif defined(HC32L13xJxxx)       //48PIN MCU
-	M0P_GPIO->PCADS &= 0xE000;    ///< PC00~PC12配置为数字端口
-	M0P_GPIO->PDADS &= 0xFFCB;    ///< PD02/PD04/PD05配置为数字端口
+    switch(pinType){
+    case HC32L13xJxxx:  //48PIN MCU
+        {
+            M0P_GPIO->PCADS &= 0xE000;    ///< PC00~PC12配置为数字端口
+            M0P_GPIO->PDADS &= 0xFFCB;    ///< PD02/PD04/PD05配置为数字端口
+            M0P_GPIO->PCDIR	|= 0x1FFF;    ///< PC00~PC12配置为端口输入
+            M0P_GPIO->PDDIR	|= 0x0034;    ///< PD02/PD04/PD05配置为端口输入
+            M0P_GPIO->PCPU  |= 0x1FFF;    ///< PC00~PC12配置为上拉
+            M0P_GPIO->PDPU  |= 0x0034;    ///< PD02/PD04/PD05配置为上拉
+        }
+        break;
+    case HC32L13xFxxx:  //32PIN MCU
+        {
+            M0P_GPIO->PAADS &= 0xFFF4;    ///< PA00/PA01/PA03配置为数字端口
+            M0P_GPIO->PBADS &= 0x08FB;    ///< PB02/PB08/PB09/PB10/PB12/PB13/PB14/PB15配置为数字端口
+            M0P_GPIO->PCADS &= 0xC000;    ///< PC00~PC13配置为数字端口
+            M0P_GPIO->PDADS &= 0xFF0B;    ///< PD02/PD04/PD05/PD06/PD07配置为数字端口
 
-    M0P_GPIO->PCDIR	|= 0x1FFF;    ///< PC00~PC12配置为端口输入
-	M0P_GPIO->PDDIR	|= 0x0034;    ///< PD02/PD04/PD05配置为端口输入
+            M0P_GPIO->PADIR	|= 0x000B;    ///< PA00/PA01/PA03配置为端口输入
+            M0P_GPIO->PBDIR	|= 0xF704;    ///< PB02/PB08/PB09/PB10/PB12/PB13/PB14/PB15配置为端口输入
+            M0P_GPIO->PCDIR	|= 0x3FFF;    ///< PC00~PC13配置为端口输入
+            M0P_GPIO->PDDIR	|= 0x00F4;    ///< PD02/PD04/PD05/PD06/PD07配置为端口输入
 
-	M0P_GPIO->PCPU  |= 0x1FFF;    ///< PC00~PC12配置为上拉
-	M0P_GPIO->PDPU  |= 0x0034;    ///< PD02/PD04/PD05配置为上拉
+            M0P_GPIO->PAPU  |= 0x000B;    ///< PA00/PA01/PA03配置为上拉
+            M0P_GPIO->PBPU  |= 0xF704;    ///< PB02/PB08/PB09/PB10/PB12/PB13/PB14/PB15配置为上拉
+            M0P_GPIO->PCPU  |= 0x3FFF;    ///< PC00~PC12配置为上拉
+            M0P_GPIO->PDPU  |= 0x00F4;    ///< PD02/PD04/PD06配置为上拉
+        }
+        break;
+    case HC32L13xExxx:  //28PIN MCU
+        {
+            M0P_GPIO->PAADS &= 0x7FFF;    ///< PA15配置为数字端口
+            M0P_GPIO->PBADS &= 0x0007;    ///< PB03~15配置为数字端口
+            M0P_GPIO->PCADS &= 0xC000;    ///< PC00~PC13配置位数字端口
+            M0P_GPIO->PDADS &= 0xFF0B;    ///< PD02/PD04/PD05/PD06/PD07配置位数字端口
 
-#elif defined(HC32L13xFxxx)       //32PIN MCU
-	M0P_GPIO->PAADS &= 0xFFF4;    ///< PA00/PA01/PA03配置为数字端口
-	M0P_GPIO->PBADS &= 0x08FB;    ///< PB02/PB08/PB09/PB10/PB12/PB13/PB14/PB15配置为数字端口
-	M0P_GPIO->PCADS &= 0xC000;    ///< PC00~PC13配置为数字端口
-	M0P_GPIO->PDADS &= 0xFF0B;    ///< PD02/PD04/PD05/PD06/PD07配置为数字端口
+            M0P_GPIO->PADIR	|= 0x8000;    ///< PA15配置为端口输入
+            M0P_GPIO->PBDIR	|= 0xFFF8;    ///< PB03~15配置为端口输入
+            M0P_GPIO->PCDIR	|= 0x3FFF;    ///< PC00~PC13配置为端口输入
+            M0P_GPIO->PDDIR	|= 0x00F4;    ///< PD02/PD04/PD05/PD06/PD07配置为端口输入
 
-	M0P_GPIO->PADIR	|= 0x000B;    ///< PA00/PA01/PA03配置为端口输入
-	M0P_GPIO->PBDIR	|= 0xF704;    ///< PB02/PB08/PB09/PB10/PB12/PB13/PB14/PB15配置为端口输入
-	M0P_GPIO->PCDIR	|= 0x3FFF;    ///< PC00~PC13配置为端口输入
-	M0P_GPIO->PDDIR	|= 0x00F4;    ///< PD02/PD04/PD05/PD06/PD07配置为端口输入
+            M0P_GPIO->PAPU  |= 0x8000;    ///< PA15配置为上拉
+            M0P_GPIO->PBPU  |= 0xFFF8;    ///< PB03~15配置为上拉
+            M0P_GPIO->PCPU  |= 0x3FFF;    ///< PC00~PC13配置为上拉
+            M0P_GPIO->PDPU  |= 0x00F4;	  ///< PD02/PD04/PD05/PD06/PD07配置为上拉
+        }
+        break;
+    case HC32L13xKxxx:  //64PIN MCU
+    default:
+        break;
+    }
 
-	M0P_GPIO->PAPU  |= 0x000B;    ///< PA00/PA01/PA03配置为上拉
-	M0P_GPIO->PBPU  |= 0xF704;    ///< PB02/PB08/PB09/PB10/PB12/PB13/PB14/PB15配置为上拉
-	M0P_GPIO->PCPU  |= 0x3FFF;    ///< PC00~PC12配置为上拉
-	M0P_GPIO->PDPU  |= 0x00F4;    ///< PD02/PD04/PD06配置为上拉
-
-#elif defined(HC32L13xExxx)       //28PIN MCU
-	M0P_GPIO->PAADS &= 0x7FFF;    ///< PA15配置为数字端口
-	M0P_GPIO->PBADS &= 0x0007;    ///< PB03~15配置为数字端口
-	M0P_GPIO->PCADS &= 0xC000;    ///< PC00~PC13配置位数字端口
-	M0P_GPIO->PDADS &= 0xFF0B;    ///< PD02/PD04/PD05/PD06/PD07配置位数字端口
-
-    M0P_GPIO->PADIR	|= 0x8000;    ///< PA15配置为端口输入
-    M0P_GPIO->PBDIR	|= 0xFFF8;    ///< PB03~15配置为端口输入
-    M0P_GPIO->PCDIR	|= 0x3FFF;    ///< PC00~PC13配置为端口输入
-    M0P_GPIO->PDDIR	|= 0x00F4;    ///< PD02/PD04/PD05/PD06/PD07配置为端口输入
-
-	M0P_GPIO->PAPU  |= 0x8000;    ///< PA15配置为上拉
-	M0P_GPIO->PBPU  |= 0xFFF8;    ///< PB03~15配置为上拉
-	M0P_GPIO->PCPU  |= 0x3FFF;    ///< PC00~PC13配置为上拉
-	M0P_GPIO->PDPU  |= 0x00F4;	  ///< PD02/PD04/PD05/PD06/PD07配置为上拉
-
-#endif
-
-	  M0P_SYSCTRL->PERI_CLKEN = tmpReg;
+    M0P_SYSCTRL->PERI_CLKEN = tmpReg;
 }
 
 /**
@@ -160,6 +166,5 @@ void SystemInit(void)
     Sysctrl_ClkInit(&stcCfg);
 
     SystemCoreClockUpdate();
-	_HidePinInit();
 }
 

@@ -16,7 +16,7 @@
 #define TASK_PERIOD_MS      100U    /* unit ms */
 
 /* Code Version */
-char *gCodeVers = "1002";
+char *gCodeVers = "1005";
 
 /****
 Global Variables
@@ -77,11 +77,22 @@ bool AppTaskCreate(void)
     bool success = false;
 
     /* watchdog timeout 6s refer MCU datasheet */
+    System_HidePinInit(HC32L13xFxxx);
+
     result = PlatformInit(6);
+
+    /* Low Energy Timer and DeepSleep init */
+    if(false == BSP_LPowerInit(false)){
+        return false;
+    }
+
+    success = DevUserInit();
+    if(gParam.dev.vol < 2000 && RJ_ERR_OK == result){
+        result = RJ_ERR_BAT;
+    }
+
     if(RJ_ERR_OK != result){
         char *errstr = "MCU";
-        UserDebugInit(false, UART_BRATE_9600, UART_PARI_NONE);
-
         switch(result){
         case RJ_ERR_OS:
             errstr ="OS";
@@ -95,25 +106,22 @@ bool AppTaskCreate(void)
         case RJ_ERR_CHK:
             errstr ="sign";
             break;
+        case RJ_ERR_BAT:
+            errstr ="LowBat";
+            break;
         }
-        printk("LoRa %s Firmware V%s %s error, please recovery\r\n", MODULE_NAME,
-               gCodeVers, errstr);
-        osDelayMs(1000);
+
+        printk("LoRa %s Firmware V%s %s error[%u], please recovery\r\n",
+               MODULE_NAME, gCodeVers, errstr, gParam.dev.vol);
+
+        if(gDevFlash.config.lcp <= 0){
+            osDelayMs(1000);
+        } else {
+            PlatformSleep(1);
+        }
+
         return false;
     }
-
-#if BOOL_EXTL_EN
-    if(BSP_ClockCheck(500) < 500){
-        gParam.dev.extl = 1;
-    }
-#endif
-
-    /* Low Energy Timer and DeepSleep init */
-    if(false == BSP_LPowerInit(gParam.dev.extl)){
-        return false;
-    }
-
-    success = DevUserInit();
 
     if(false == success){
         return false;
@@ -131,8 +139,6 @@ bool AppTaskCreate(void)
 
 void AppTaskExtends(void)
 {
-    DevGetVol(0,0);
-
     while (1) {
         APP_FeedDog();
         AppTaskManager();

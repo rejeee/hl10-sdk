@@ -26,6 +26,8 @@ osThreadDef(MacTaskHandler, osPriorityNormal, 1, 0);
 
 static struct mac_lorawan_t sMacParam = {0};
 
+static volatile uint32_t sOnAirMs = 0;
+
 /****
 Local Functions
 ****/
@@ -68,7 +70,7 @@ static void RadioPrintRecv(bool format)
 static void MacTaskHandler(void const *p_arg)
 {
     uint32_t status = AT_STATUS_NONE;
-    uint8_t spiIdx = BSP_SPI0;
+    uint8_t spiIdx = RADIO_TRX_SPI;
 
     while (1) {
         if(gDevFlash.config.lcp > 0 && gEnableRadioRx && gDevFlash.config.prop.bdrate <= UART_BRATE_9600){
@@ -87,6 +89,8 @@ static void MacTaskHandler(void const *p_arg)
                     } else {
                         status = MacRadio_RxProcess(spiIdx, false);
                     }
+                } else {
+                    osDelayMs(10);
                 }
             } else {
                 if(gDevFlash.config.lcp > 0){
@@ -108,8 +112,9 @@ static void MacTaskHandler(void const *p_arg)
                 }
             }
             status = AT_STATUS_NONE;
+        } else {
+            osDelayMs(10);
         }
-        osDelayMs(1);
     }
 }
 
@@ -135,11 +140,14 @@ bool AppMacTask(void)
     return success;
 }
 
-bool RadioWaitDone(uint8_t spiIdx, SemIndex_t semIdx, uint32_t timeout)
+bool RadioWaitDone(uint8_t spiIdx, SemIndex_t semIdx, bool tx, uint32_t timeout)
 {
     bool success = false;
 
     /* wait for rxdone or timeout interrupt, timeout is same with tx */
+    if(tx){
+        sOnAirMs = (timeout > 250)? (timeout - 250) : timeout;
+    }
     success = BSP_OS_SemWait(&gIRQSem, timeout);
 
     return success;
@@ -157,9 +165,18 @@ bool RadioSemClear(uint8_t spiIdx, SemIndex_t semIdx)
 uint32_t AT_TxFreq(uint32_t freq, uint8_t *buf, uint32_t len)
 {
     uint32_t status = 0;
+    uint32_t ticks = rt_time_get();
 
     sMacParam.freq = freq;
-    status = MacRadio_TxProcess(BSP_SPI0, buf, len, &sMacParam);
+    status = MacRadio_TxProcess(RADIO_TRX_SPI, buf, len, &sMacParam);
+    ticks = rt_time_get() - ticks;
+
+    if(ticks < sOnAirMs/2){
+        gEnableRadioRx = false;
+        AppMacUpdateRx(true);
+        RadioInit(RADIO_TRX_SPI);
+        gEnableRadioRx = true;
+    }
 
     return status;
 }
@@ -208,7 +225,7 @@ void RadioCustomization(uint8_t spiIdx, bool tx, RadioSettings_t *ptr)
 
 bool AppMacUpdateRx(bool update)
 {
-    bool success = MacRadio_AbortRx(BSP_SPI0);
+    bool success = MacRadio_AbortRx(RADIO_TRX_SPI);
 
     return success;
 }

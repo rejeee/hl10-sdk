@@ -10,7 +10,8 @@
 #ifndef PLATFORM_DEV_LED_H
 #define PLATFORM_DEV_LED_H
 
-#include "bsp.h"
+#include <stdint.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {

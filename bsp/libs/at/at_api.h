@@ -100,6 +100,7 @@ typedef enum
     AT_STATUS_ACCESS,           /**< ER09 cannot access */
     AT_STATUS_RX_ERR,           /**< radio rx error */
     AT_STATUS_CAD_ERR,          /**< CAD error */
+    AT_STATUS_TX_ERR,           /**< radio tx error */
     /**> NOTE: the follow code depend user customer funtion */
     AT_STATUS_H,                /**< AT command list */
     AT_STATUS_I,                /**< print device version */
@@ -176,7 +177,7 @@ uint32_t AT_TxFreq(uint32_t freq, uint8_t *buf, uint32_t len);
  *
  * return true if save successful else false.
  */
-bool Flash_WriteParam(void);
+bool Flash_WriteParam(uint8_t cmd_type);
 
 /*@}*/
 

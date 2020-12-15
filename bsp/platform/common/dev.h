@@ -32,6 +32,8 @@ typedef enum
     RJ_ERR_PARAM,       /**< flash parameters init fail */
     RJ_ERR_LPW,         /**< LPower and timer init fail */
     RJ_ERR_CHK,         /**< HL9 sign check fail */
+    RJ_ERR_RF,
+    RJ_ERR_BAT,
 } RJ_STATUS;
 
 /**
@@ -45,6 +47,7 @@ typedef struct  {
     uint32_t res    : 8;    /**> reserve byte */
     uint32_t exth   : 1;    /**> whether to use external high frequency OSC */
     uint32_t extl   : 1;    /**> whether to use external low frequency OSC */
+    uint32_t rfok   : 1;
 } dev_param_t;
 
 /****
@@ -80,6 +83,9 @@ uint32_t PlatformSleep(uint32_t secs);
  *          if @ms is zero, chip immediate return.
  */
 bool PlatformSleepMs(uint32_t ms);
+
+/* Low Battery detected */
+void PlatformLvdInit();
 
 /**
  * @FIXME:The following code should be customized by the user

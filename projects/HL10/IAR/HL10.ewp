@@ -189,6 +189,7 @@
           <state>__CMSIS_RTOS</state>
           <state>USE_OS_RTX</state>
           <state>HC32L13X</state>
+          <state>NDEBUG</state>
           <state>PROJECT_CONF_H="platform_conf.h"</state>
         </option>
         <option>

@@ -19,7 +19,7 @@ extern "C" {
 
 #define GPIO_READ       Gpio_GetInputIO
 
-typedef struct {
+struct mcu_rst_t {
     uint8_t u8Por5V     :1;
     uint8_t u8Por1_5V   :1;
     uint8_t u8Lvd       :1;
@@ -28,17 +28,17 @@ typedef struct {
     uint8_t u8Lockup    :1;
     uint8_t u8Sysreq    :1;
     uint8_t u8RSTB      :1;
-} mcu_rst_t;
+};
 
 struct global_param_t {
-    dev_param_t     dev;
-    BSP_OS_THREAD   mainid;
-    BSP_OS_THREAD   appid;
-    BSP_OS_MUTEX    mutex;
-    uint32_t        dtime;
-    mcu_rst_t       rst;
-    uint8_t         mode;
-    uint8_t         aswitch;
+    dev_param_t         dev;
+    osThreadId          mainid;     /**> device main thread */
+    osThreadId          appid;      /**> device app thread for customize use */
+    osMutexId           mutex;      /**> device global mutex for customize use */
+    uint32_t            dtime;      /**> device time */
+    struct mcu_rst_t    rst;        /**> device reset cause   */
+    uint8_t             mode;
+    uint8_t             aswitch;
 };
 
 /****

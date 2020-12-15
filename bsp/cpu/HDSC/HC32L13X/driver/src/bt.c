@@ -445,7 +445,7 @@ en_result_t Bt_M0_EnTOG_Output(en_bt_unit_t enUnit, boolean_t bEnTOG)
  ** 
  ** \retval Ok or Error                                      
  *****************************************************************************/
-en_result_t Tim3_M0_Enable_Output(en_bt_unit_t enUnit, boolean_t bEnOutput)
+en_result_t Bt_M0_Enable_Output(en_bt_unit_t enUnit, boolean_t bEnOutput)
 {
     en_result_t enResult = Ok;
     volatile M0P_TIM0_MODE0_TypeDef *pstcM0PBt = (M0P_TIM0_MODE0_TypeDef *)((uint32_t)M0P_TIM0_MODE0+0x100*enUnit);

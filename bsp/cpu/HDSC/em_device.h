@@ -79,6 +79,7 @@ typedef struct {
     en_gpio_pin_t   miso;   /**<    the Pin of SPI MISO */
     en_gpio_pin_t   mosi;   /**<    the Pin of SPI MOSI */
     en_gpio_af_t    af;     /**<    SPI alter function  */
+    uint8_t         mode;   /**<    SPI MODE[0,1,2,3]   */
     BSP_SPI_IDX     idx;    /**<    SPI No.             */
 } BSP_SPI_TypeDef;
 

@@ -25,7 +25,7 @@ bool MacRadio_Init(void);
 /**
  *@return AT_STATUS
  */
-uint32_t MacRadio_TxProcess(uint8_t spiIdx, uint8_t *buf, uint32_t len, struct mac_lorawan_t *ptr);
+uint32_t MacRadio_TxProcess(uint8_t spiIdx, uint8_t *buf, const uint32_t len, struct mac_lorawan_t *ptr);
 uint32_t MacRadio_RxProcess(uint8_t spiIdx, bool reconfig);
 uint32_t MacRadio_CadProcess(uint8_t spiIdx, bool reconfig);
 
@@ -44,7 +44,7 @@ bool RadioGetCanRx(uint8_t spiIdx);
  *
  * @FIXME: need user special implementation
  */
-bool RadioWaitDone(uint8_t spiIdx, SemIndex_t semIdx, uint32_t timeout);
+bool RadioWaitDone(uint8_t spiIdx, SemIndex_t semIdx, bool tx, uint32_t timeout);
 RadioIrqType_t RadioRxFinish(uint8_t spiIdx);
 RadioIrqType_t RadioDecode(uint8_t spiIdx, struct sx12xx_rx_t *rxObj, struct mac_lorawan_t *ptr);
 

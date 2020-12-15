@@ -10,7 +10,7 @@ extern "C" {
 #define MIN_VOL_LEVEL   3000
 #define MAX_VOL_LEVEL   3600
 
-#define BOOL_EXTL_EN    1
+#define RADIO_TRX_SPI   BSP_SPI0
 
 /**
  *  Debug Port Settings
@@ -35,14 +35,15 @@ extern "C" {
 
 #define UPA_GPIO                GpioPortB
 #define UPA_PIN                 GpioPin3
+
 #define UNUSED_GPIO             GpioPortB
 #define UNUSED_PIN              GpioPin6
 
 /****
 Global Variables
 ****/
-extern BSP_OS_MQ        gUartQ;
-extern BSP_OS_MPOOL     gMemPool;
+extern osMessageQId     gUartQ;
+extern osPoolId         gMemPool;
 
 /****
 Global Functions

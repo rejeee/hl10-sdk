@@ -26,8 +26,7 @@ extern "C" {
  *
  * @return  true if success else false
  */
-bool DevUART_Init(const BSP_UART_TypeDef* ptr, const struct sp_uart_t *sp,
-                  uint8_t *buf, uint32_t max_size);
+bool DevUART_Init(const BSP_UART_TypeDef* ptr, const struct sp_uart_t *sp, uint8_t *buf, uint32_t max_size);
 
 /**
  * @brief ReInitialize the UART with the pointer of UART struct

@@ -43,7 +43,7 @@ typedef enum
  */
 struct sp_uart_t
 {
-    BSP_OS_SEM      rx_sem;     /**< BSP_OS_SEM should be a pointer type */
+    osSemaphoreId   rx_sem;     /**< BSP_OS_SEM should be a pointer type */
     Ringfifo*       rx_fifo;    /**< UART Rx FIFO */
     uint32_t        timeout;    /**< The min timeslice of between two frames */
     BSP_UART_IDX    idx;
@@ -53,8 +53,8 @@ struct sp_uart_t
 Global Variables
 ****/
 extern char*            gCodeVers;
-extern BSP_OS_SEM       gIRQSem;
-extern BSP_OS_SEM       gScanSem;
+extern osSemaphoreId    gIRQSem;
+extern osSemaphoreId    gScanSem;
 extern struct sp_uart_t gDebugUart;
 
 /****

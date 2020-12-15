@@ -37,7 +37,10 @@ extern "C" {
 type definiens
 ****/
 
-/* Radio IRQ type */
+/**
+ * @brief Radio IRQ type
+ * @enum RadioIrqType_t
+ */
 typedef enum
 {
   RADIO_IRQ_TIMEOUT = 0,
@@ -47,11 +50,13 @@ typedef enum
   RADIO_IRQ_FSK_RX,
   RADIO_IRQ_RX_ERR,
   RADIO_IRQ_RX_TIMEOUT,
+  RADIO_IRQ_TX_ERR,
   RADIO_IRQ_UNKOWN
 } RadioIrqType_t;
 
 /**
- * Radio driver supported modems
+ * @brief Radio driver supported modems
+ * @enum RadioModems_t
  */
 typedef enum
 {
@@ -60,7 +65,8 @@ typedef enum
 } RadioModems_t;
 
 /**
- * Radio driver operation mode
+ * @brief Radio driver operation mode
+ * @enum RadioOpMode_t
  */
 typedef enum
 {
@@ -88,22 +94,23 @@ enum
 };
 
 /**
- * Radio Settings
+ * @brief Radio Settings
+ * @struct RadioSettings_t
  */
 typedef struct
 {
-  LoRaSettings_t    LoRa;
-  FskSettings_t     Fsk;
-  uint32_t          rxtimeout;
-  uint32_t          freq;
-  uint32_t          syncword;
-  uint32_t          preamb : 16;  /* RadioOpMode_t */
-  uint32_t          modem  : 1;   /* [0: FSK; 1: LoRa] */
-  uint32_t          crcon  : 1;   /* [0: OFF; 1: ON] */
-  uint32_t          opmode : 3;   /* RadioOpMode_t */
-  uint32_t          fixlen : 11;  /* [0: variable; other: fixed length] */
-  int8_t            power;        /* the output power [dbm] */
-  uint8_t           rfo;          /* rfo */
+    LoRaSettings_t      LoRa;
+    FskSettings_t       Fsk;
+    uint32_t            rxtimeout;
+    uint32_t            freq;
+    uint32_t            syncword;
+    uint32_t            preamb  : 16;   /* RadioOpMode_t */
+    uint32_t            modem   : 1;    /* [0: FSK; 1: LoRa] */
+    uint32_t            crcon   : 1;    /* [0: OFF; 1: ON] */
+    uint32_t            opmode  : 3;    /* RadioOpMode_t */
+    uint32_t            fixlen  : 11;   /* [0: variable; other: fixed length] */
+    uint8_t             rfo;            /* rfo */
+    int8_t              power;          /* the output power [dbm] */
 } RadioSettings_t;
 
 /*
@@ -126,6 +133,20 @@ struct sx12xx_rx_t
 };
 
 /**
+ * @brief config options union define
+ * @union ConfigOptUnion
+ */
+typedef union
+{
+    struct {
+        uint8_t cfg     : 1;    /**> [0 ignore radio settings, 1 reconfig radio settings ] */
+        uint8_t notx    : 1;    /**> [0 direct send after config, 1 no send after config ] */
+        uint8_t errata  : 1;    /**> [0 , 1 with errata ] */
+    } bits;
+    uint8_t value;
+} ConfigOptUnion;
+
+/**
  * @brief Get current HAL version
  */
 uint32_t RadioHalVersion(void);
@@ -133,7 +154,7 @@ uint32_t RadioHalVersion(void);
 /**
  * @brief Radio Driver Init
  */
-void RadioInit(uint8_t spiIdx);
+bool RadioInit(uint8_t spiIdx);
 
 /**
  * @brief a delay function for radio operatioin
@@ -160,6 +181,10 @@ void RadioAntSwitch(uint8_t spiIdx, bool rx);
  * @param status    0--active; 1-deactive(lowpower)
  */
 void RadioAntLowPower(uint8_t spiIdx, uint8_t status);
+
+uint16_t RadioReadFlags(uint8_t spiIdx, uint16_t irqmask, bool clear);
+uint16_t RadioGetDeviceErrors(uint8_t spiIdx);
+void RadioClearDeviceErrors(uint8_t spiIdx);
 
 #ifdef __cplusplus
 }

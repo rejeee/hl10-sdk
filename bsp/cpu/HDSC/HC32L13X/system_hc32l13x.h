@@ -66,10 +66,13 @@ extern "C" {
 /******************************************************************************/
 #define HWWD_DISABLE        (1)
 
-//#define HC32L13xKxxx           //64PIN
-//#define HC32L13xJxxx           //48PIN
-#define HC32L13xFxxx           //32PIN
-//#define HC32L13xExxx           //28PIN
+/* HC32L13x pin */
+typedef enum {
+    HC32L13xKxxx = 0x00,
+    HC32L13xJxxx,
+    HC32L13xFxxx,
+    HC32L13xExxx
+} HL13xType;
 
 ///< XTH
 #define SYSTEM_XTH          (32*1000*1000u)     ///< 32MHz
@@ -104,6 +107,8 @@ extern "C" {
 extern uint32_t SystemCoreClock;          // System Clock Frequency (Core Clock)
 extern void SystemInit (void);            // Initialize the system
 extern void SystemCoreClockUpdate (void); // Update SystemCoreClock variable
+
+void System_HidePinInit(HL13xType pinType);
 
 #ifdef __cplusplus
 }

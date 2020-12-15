@@ -48,7 +48,10 @@ struct sp_uart_t gDebugUart = {
     .idx = DBG_UART_IDX
 };
 
-static BSP_ADC_TypeDef sADCConfig;
+static BSP_ADC_TypeDef sADCConfig = {
+    .ref = AdcMskRefVolSelInBgr1p5,
+    .single = 1
+};
 
 void Rtc_IRQHandler(void)
 {
@@ -411,9 +414,17 @@ bool DevUserInit(void)
     BSP_RTC_Init(&rtcCfg);
     UserInitGPIO();
 
+    DevGetVol(0, 0);
     gParam.dtime = BSP_RTC_GetSecs();
 
     return success;
+}
+
+void RadioLBTLog(uint8_t chan, int rssi)
+{
+    if(RX_MODE_FACTORY == gDevRam.rx_mode){
+        printk("LBT Channel[%u]:%ddBm\r\n", chan, rssi);
+    }
 }
 
 void DevGetVol(uint32_t param1, uint16_t param2)
@@ -437,9 +448,3 @@ void DevGetVol(uint32_t param1, uint16_t param2)
     return;
 }
 
-void RadioLBTLog(uint8_t chan, int rssi)
-{
-    if(RX_MODE_FACTORY == gDevRam.rx_mode){
-        LOG_INFO(("LBT Channel[%u]:%ddBm\r\n", chan, rssi));
-    }
-}

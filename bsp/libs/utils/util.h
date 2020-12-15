@@ -21,6 +21,7 @@ extern "C" {
 
 #define IS_DIGIT(x)   ((0x2F < (x)) && ((x) < 0x3A))
 
+/* 0x00~0x0F convert to char '0'~'F' */
 extern const uint8_t kByte2hex[0x10];
 
 /**
@@ -39,6 +40,12 @@ void srand_t(unsigned int seed);
  */
 int32_t randr(int32_t max);
 
+/**
+ * @brief Check little or big endian
+ *
+ * @return  true    little-endian
+ *          false   big-endian
+ */
 bool little_endian(void);
 
 /**

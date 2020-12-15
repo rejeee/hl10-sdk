@@ -52,7 +52,7 @@ void BSP_ClockdelayUs(int count);
 /**
  * @brief check EXTL clock if or not ok
  *
- * @param waitms    the wait time, unit ms with RCH24MHz
+ * @param waitms    the wait time, unit ms
  *
  * @return the actual times
  */

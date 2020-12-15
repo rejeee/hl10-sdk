@@ -8,6 +8,7 @@
  * @author  Felix
  ******************************************************************************/
 #include "dev_led.h"
+#include "bsp.h"
 
 #define LED_N_GPIO          GpioPortA
 #define LED1_PIN            GpioPin10
