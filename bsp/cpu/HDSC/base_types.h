@@ -75,6 +75,12 @@
   #define FALSE       ((boolean_t) 0u)
 #endif  
 
+#ifndef __WEAK
+#if defined (__CC_ARM)
+#define __WEAK            __weak
+#endif
+#endif
+
 /** Returns the minimum value out of two values */
 #define MINIMUM( X, Y )  ((X) < (Y) ? (X) : (Y))
 
