@@ -371,7 +371,7 @@
             <ScatterFile>.\Objects\MHL9.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc>..\..\..\bsp\libs\hl10.a --keep=*Handler</Misc>
+            <Misc>..\..\..\bsp\libs\hl10.lib --keep=*Handler</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings></DisabledWarnings>
           </LDads>
@@ -465,6 +465,11 @@
               <FileName>lptim.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\bsp\cpu\HDSC\HC32L13X\driver\src\lptim.c</FilePath>
+            </File>
+            <File>
+              <FileName>lvd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\bsp\cpu\HDSC\HC32L13X\driver\src\lvd.c</FilePath>
             </File>
           </Files>
         </Group>
