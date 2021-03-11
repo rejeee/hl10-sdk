@@ -83,7 +83,7 @@ typedef struct
     uint32_t    cr      : 3;  /**> [1]:CR_4_5 ... [4]:CR_4_8            */
     uint32_t    crc     : 1;  /**> [0 CRC OFF, 1 CRC ON]                */
     uint32_t    fixlen  : 11; /**> [0: variable; other: fixed length]   */
-    uint32_t    modem   : 1;  /**> [0 FSK, 1 LORA ]                     */
+    uint32_t    modem   : 3;  /**> [0 FSK, 1 LORA ]                     */
     uint32_t    tiq     : 1;  /**> [0 OFF, 1 ON]                        */
     uint32_t    riq     : 1;  /**> [0 OFF, 1 ON]                        */
     uint32_t    lowRate : 4;  /**> TLDR 2 | RLDR 2, 0 AUTO, 1 ON, 2 OFF */
@@ -95,7 +95,8 @@ typedef struct
  */
 typedef struct
 {
-    uint32_t    ipMode  : 4;  /**> IP(Addr) mode: 0 no present */
+    uint32_t    role    : 1;    /* [0: slave; 1: master] */
+    uint32_t    ipMode  : 3;  /**> IP(Addr) mode: 0 no present */
     uint32_t    seqMode : 1;  /**> [0 OFF, 1 ON] */
     uint32_t    netmode : 3;  /**> LPWA network protocol mode */
     uint32_t    bdrate  : 4;  /**> UART baudrate type */

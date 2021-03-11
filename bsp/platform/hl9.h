@@ -37,8 +37,8 @@ struct global_param_t {
     osMutexId           mutex;      /**> device global mutex for customize use */
     uint32_t            dtime;      /**> device time */
     struct mcu_rst_t    rst;        /**> device reset cause   */
-    uint8_t             mode;
-    uint8_t             aswitch;
+    volatile uint8_t    mode;
+    volatile uint8_t    aswitch;
 };
 
 /****
@@ -61,7 +61,9 @@ Global Functions
  *
  * @return  1 currently, other: TBD
  */
+#ifndef USE_NO_LPWAN
 int DevLgwRecv(uint8_t param, struct mac_lorawan_t *ptr);
+#endif
 
 /**
  * @brief Send a "OK\r\n" string

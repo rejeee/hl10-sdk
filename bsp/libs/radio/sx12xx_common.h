@@ -28,6 +28,7 @@ Macro definiens
 /** @brief Radio TX/RX maximal payload */
 #define RADIO_MAX_PAYLOAD       255U
 #define RADIO_DEFAULT_FREQ      475500000U
+#define RADIO_TIMEOUT_MS        200u
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,7 +62,11 @@ typedef enum
 typedef enum
 {
   MODEM_FSK = 0,
-  MODEM_LORA
+  MODEM_LORA,
+  MODEM_RANGING,
+  MODEM_FLRC,
+  MODEM_BLE,
+  MODEM_NONE = 0x0F
 } RadioModems_t;
 
 /**
@@ -101,14 +106,17 @@ typedef struct
 {
     LoRaSettings_t      LoRa;
     FskSettings_t       Fsk;
-    uint32_t            rxtimeout;
+    uint32_t            timeout;        /* rx and tx timeout */
     uint32_t            freq;
     uint32_t            syncword;
     uint32_t            preamb  : 16;   /* RadioOpMode_t */
-    uint32_t            modem   : 1;    /* [0: FSK; 1: LoRa] */
     uint32_t            crcon   : 1;    /* [0: OFF; 1: ON] */
     uint32_t            opmode  : 3;    /* RadioOpMode_t */
+    uint32_t            role    : 1;    /* [0: slave; 1: master] */
     uint32_t            fixlen  : 11;   /* [0: variable; other: fixed length] */
+    uint32_t            rngaddr;
+    uint8_t             size;
+    uint8_t             modem;          /* [0: FSK; 1: LoRa] */
     uint8_t             rfo;            /* rfo */
     int8_t              power;          /* the output power [dbm] */
 } RadioSettings_t;
@@ -168,6 +176,12 @@ void RadioDelayUs(uint32_t us);
 
 void RadioReset(uint8_t spiIdx);
 
+void RadioSleep(uint8_t spiIdx);
+
+int8_t RadioMatchPower(uint8_t spiIdx, int8_t power);
+
+ChipType_t RadioMatchChip(uint8_t spiIdx);
+
 /**
  * @brief ANT switch for TX and RX
  *
@@ -185,6 +199,11 @@ void RadioAntLowPower(uint8_t spiIdx, uint8_t status);
 uint16_t RadioReadFlags(uint8_t spiIdx, uint16_t irqmask, bool clear);
 uint16_t RadioGetDeviceErrors(uint8_t spiIdx);
 void RadioClearDeviceErrors(uint8_t spiIdx);
+
+uint16_t RadioChipVersion(uint8_t spiIdx);
+
+double RadioRangingRaw(uint8_t spiIdx, uint8_t bw, uint8_t rangeType);
+double RadioCalculateRange(double rangeRaw[], uint32_t count, uint8_t bw, uint8_t sf, RadioQoS_t *ptr);
 
 #ifdef __cplusplus
 }

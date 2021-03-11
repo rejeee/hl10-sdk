@@ -110,6 +110,7 @@ typedef struct
     int8_t      snr;        /**<  max physical SNR range -32..+31.75 */
 } RadioQoS_t;
 
+#ifndef USE_NO_LPWAN
 struct mac_lorawan_t {
     lpwan_func_t    cb;
     RadioQoS_t      qos;
@@ -124,6 +125,7 @@ struct mac_lorawan_t {
     uint8_t         rxLen;          /**<  valid Rx data length */
     uint8_t         rxIdx;          /**<  valid Rx data index */
 };
+#endif
 
 #if defined(__cplusplus)
 }

@@ -90,6 +90,7 @@ void PlatformLvdInit();
 /**
  * @FIXME:The following code should be customized by the user
  */
+void UserInitGPIO(void);
 
 /**
  * @brief Enable or disable external GPIO for user

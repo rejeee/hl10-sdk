@@ -222,7 +222,7 @@ bool BSP_OS_MemPut(const osPoolId *ptr, void *p_blk);
  */
 bool BSP_OS_FlagPost(const osThreadId *ptid, int32_t evt);
 
-int32_t BSP_OS_FlagWait(void *arg, int32_t flags, int32_t dly_ms);
+int32_t BSP_OS_FlagWait(void *arg, int32_t flags, uint32_t dly_ms);
 
 bool BSP_OS_FlagClear(void *arg, int32_t evt);
 

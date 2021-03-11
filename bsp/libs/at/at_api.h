@@ -100,7 +100,7 @@ typedef enum
     AT_STATUS_ACCESS,           /**< ER09 cannot access */
     AT_STATUS_RX_ERR,           /**< radio rx error */
     AT_STATUS_CAD_ERR,          /**< CAD error */
-    AT_STATUS_TX_ERR,           /**< radio tx error */
+    AT_STATUS_TX_ERR,           /**< radio tx error when radio IRQ is 0x7F */
     /**> NOTE: the follow code depend user customer funtion */
     AT_STATUS_H,                /**< AT command list */
     AT_STATUS_I,                /**< print device version */

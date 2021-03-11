@@ -25,6 +25,7 @@ Include Files
  * @return  true if initialize success else false
  */
 bool BSP_LPowerInit(bool extl);
+void BSP_LPowerIRQHandler(void);
 
 /**
  * @brief Set Chip enter low power mode.

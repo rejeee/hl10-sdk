@@ -43,6 +43,7 @@ bool BSP_CheckFlag(void);
  */
 bool BSP_FlashRead(uint32_t addr, uint32_t *data, uint32_t len);
 bool BSP_FlashReadHalf(uint32_t addr, uint16_t *data, uint32_t len);
+bool BSP_FlashReadBytes(uint32_t addr, uint8_t *data, uint32_t len);
 
 /**
  * @brief Write length data to addr
@@ -67,6 +68,7 @@ bool BSP_FlashWrite(uint32_t addr, uint32_t *data, uint32_t len);
  * @return          true if write success else false.
  */
 bool BSP_FlashHalfWord(uint32_t addr, uint16_t *data, uint32_t len);
+bool BSP_FlashBytes(uint32_t addr, uint8_t *data, uint32_t len);
 
 /**
  * @brief Erase size data from addr

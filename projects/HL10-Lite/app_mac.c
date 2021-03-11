@@ -18,12 +18,6 @@ Global Variables
 /****
 Local Variables
 ****/
-static void MacTaskHandler(void const *p_arg);
-
-/* Task variables  */
-osThreadDef(MacTaskHandler, osPriorityNormal, 1, 0);
-#define APP_MAC_NAME   osThread(MacTaskHandler)
-
 static struct mac_lorawan_t sMacParam = {0};
 
 static volatile uint32_t sOnAirMs = 0;
@@ -64,58 +58,19 @@ static void RadioPrintRecv(bool format)
     osExitCritical();
 }
 
-/**
- * @brief  MAC task handler
- */
-static void MacTaskHandler(void const *p_arg)
+static void AppRadioParameters(void)
 {
-    uint32_t status = AT_STATUS_NONE;
-    uint8_t spiIdx = RADIO_TRX_SPI;
+    /* TODO: change default settings, example */
 
-    while (1) {
-        if(gDevFlash.config.lcp > 0 && gEnableRadioRx && gDevFlash.config.prop.bdrate <= UART_BRATE_9600){
-            if(RadioGetCanRx(spiIdx)){
-                /* if you need milliseconds level sleep */
-                /* PlatformSleepMs(1000 * gDevFlash.config.lcp); */
-                PlatformSleep(gDevFlash.config.lcp);
-            }
-        }
-
-        if(gEnableRadioRx){
-            if(gParam.mode){
-                if(RX_MODE_NONE != gDevRam.rx_mode){
-                    if(gDevFlash.config.lcp > 0){
-                        status = MacRadio_CadProcess(spiIdx, true);
-                    } else {
-                        status = MacRadio_RxProcess(spiIdx, false);
-                    }
-                } else {
-                    osDelayMs(10);
-                }
-            } else {
-                if(gDevFlash.config.lcp > 0){
-                    status = MacRadio_CadProcess(spiIdx, true);
-                } else {
-                    status = MacRadio_RxProcess(spiIdx, false);
-                }
-            }
-
-            if(status == AT_STATUS_OK){
-                if(gDevFlash.config.lcp <= 0){
-                    LED_ON(LED_RF_RX);
-                }
-                RadioPrintRecv((RX_MODE_FACTORY == gDevRam.rx_mode));
-            } else if(status == AT_STATUS_RX_ERR) {
-                if(RX_MODE_FACTORY == gDevRam.rx_mode){
-                    printk("CRC ERR,SNR:%d, RSSI:%ddBm,Calc:%d\r\n",
-                           sMacParam.qos.snr, sMacParam.qos.rssi, sMacParam.qos.freqerr);
-                }
-            }
-            status = AT_STATUS_NONE;
-        } else {
-            osDelayMs(10);
-        }
-    }
+    /*
+    gDevFlash.config.txfreq = 475500000;
+    gDevFlash.config.rxfreq = 475500000;
+    gDevFlash.config.txsf = RF_SF_12;
+    gDevFlash.config.rxsf = RF_SF_12;
+    gDevFlash.config.rps.tiq = 0;
+    gDevFlash.config.rps.riq = 0;
+    gDevFlash.config.prop.netmode = NET_MODE_NONE;
+    */
 }
 
 /****
@@ -123,7 +78,6 @@ Global Functions
 ****/
 bool AppMacTask(void)
 {
-    bool success = true;
 
     memset(&sMacParam, 0 ,sizeof(struct mac_lorawan_t));
 
@@ -132,12 +86,33 @@ bool AppMacTask(void)
         return false;
     }
 
-    success = BSP_OS_TaskCreate(&gParam.appid, APP_MAC_NAME, NULL);
-    if(false == success){
-        LOG_ERR(("Mac task start error.\r\n"));
-    }
+    return true;
+}
 
-    return success;
+void AppTaskManager(void)
+{
+    uint32_t status = AT_STATUS_NONE;
+
+    AppRadioParameters();
+
+#ifdef USE_MODE_RX
+    status = MacRadio_RxProcess(RADIO_TRX_SPI, false);
+    /* status = MacRadio_CadProcess(RADIO_TRX_SPI, true); */
+    if(status == AT_STATUS_OK){
+        RadioPrintRecv(true);
+    } else if(status == AT_STATUS_RX_ERR) {
+        printk("CRC ERR,SNR:%d, RSSI:%ddBm,Calc:%d\r\n",
+               sMacParam.qos.snr, sMacParam.qos.rssi, sMacParam.qos.freqerr);
+    }
+#else
+    status = AT_TxFreq(475500000, "TEST0123456789\r\n", strlen("TEST0123456789\r\n"));
+    if(status == AT_STATUS_OK){
+        printk("\r\nOK\r\n");
+    } else {
+        printk("\r\nTX ERR\r\n");
+    }
+#endif
+    PlatformSleep(1);
 }
 
 bool RadioWaitDone(uint8_t spiIdx, SemIndex_t semIdx, bool tx, uint32_t timeout)
@@ -165,18 +140,9 @@ bool RadioSemClear(uint8_t spiIdx, SemIndex_t semIdx)
 uint32_t AT_TxFreq(uint32_t freq, uint8_t *buf, uint32_t len)
 {
     uint32_t status = 0;
-    uint32_t ticks = rt_time_get();
 
     sMacParam.freq = freq;
     status = MacRadio_TxProcess(RADIO_TRX_SPI, buf, len, &sMacParam);
-    ticks = rt_time_get() - ticks;
-
-    if(ticks < sOnAirMs/2){
-        gEnableRadioRx = false;
-        AppMacUpdateRx(true);
-        RadioInit(RADIO_TRX_SPI);
-        gEnableRadioRx = true;
-    }
 
     return status;
 }
@@ -221,18 +187,3 @@ void RadioCustomization(uint8_t spiIdx, bool tx, RadioSettings_t *ptr)
     }
     */
 }
-
-bool AppMacUpdateRx(bool update)
-{
-    bool success = MacRadio_AbortRx(RADIO_TRX_SPI);
-
-    return success;
-}
-
-void AppMacQueryCSQ(int16_t *rssi, int8_t *snr)
-{
-    *rssi = sMacParam.qos.rssi;
-    *snr = sMacParam.qos.snr;
-    return;
-}
-
