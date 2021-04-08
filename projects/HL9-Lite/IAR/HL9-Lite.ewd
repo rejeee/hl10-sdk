@@ -3,7 +3,7 @@
 <project>
   <fileVersion>2</fileVersion>
   <configuration>
-    <name>HL10-TX</name>
+    <name>HL9-TX</name>
     <toolchain>
       <name>ARM</name>
     </toolchain>
@@ -1642,7 +1642,7 @@
     </debuggerPlugins>
   </configuration>
   <configuration>
-    <name>HL10-RX</name>
+    <name>HL9-RX</name>
     <toolchain>
       <name>ARM</name>
     </toolchain>

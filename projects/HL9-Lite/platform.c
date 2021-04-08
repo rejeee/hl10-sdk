@@ -82,8 +82,20 @@ void UserInitGPIO(void)
     Sysctrl_SetPeripheralGate(SysctrlPeripheralGpio, TRUE);
 
     gpioCfg.enDir = GpioDirIn;
+
+    /* Hardware version */
+    gpioCfg.enPu = GpioPuEnable;
+    gpioCfg.enPd = GpioPdDisable;
+    Gpio_Init(UPA_GPIO, UPA_PIN, &gpioCfg);
+    osDelayMs(1);
+    if(0 == GPIO_READ(UPA_GPIO,UPA_PIN)){
+        gPaEnable = true;
+        gDevFlash.config.txpow = 0;
+        gDevFlash.config.dtype = (0x01 << TYPE_BITS_RFO);
+    }
     gpioCfg.enPu = GpioPuDisable;
     gpioCfg.enPd = GpioPdEnable;
+    Gpio_Init(UPA_GPIO, UPA_PIN, &gpioCfg);
 
     /* AT and WKUP */
     Gpio_Init(AT_GPIO, AT_PIN, &gpioCfg);
@@ -96,7 +108,7 @@ void UserInitGPIO(void)
     /* unused GPIO diabled */
     Gpio_Init(UNUSED_GPIO, UNUSED_PIN, &gpioCfg);
     /* Hardware version */
-    Gpio_Init(UPA_GPIO, UPA_PIN, &gpioCfg);
+    Gpio_Init(GpioPortA, GpioPin11, &gpioCfg);
     Gpio_Init(GpioPortB, GpioPin4, &gpioCfg);
 
     Gpio_Init(GpioPortD, GpioPin0, &gpioCfg);
@@ -132,11 +144,6 @@ void PortB_IRQHandler(void)
 void RadioDelay(uint32_t ms)
 {
     osDelayMs(ms);
-}
-
-void RadioDelayUs(uint32_t us)
-{
-    BSP_ClockdelayUs(us);
 }
 
 /**
@@ -187,7 +194,10 @@ void UserDebugWrite(const uint8_t *data, uint32_t len)
 
 void DevCfg_UserDefault(uint8_t opts)
 {
-    gDevFlash.config.txpow = 22;
+    if(gPaEnable){
+        gDevFlash.config.txpow = 0;
+        gDevFlash.config.dtype = (0x01 << TYPE_BITS_RFO);
+    }
 }
 
 bool DevCfg_UserUpdate(uint8_t *data, uint32_t len)
@@ -215,16 +225,6 @@ void RadioLBTLog(uint8_t chan, int rssi)
     if(RX_MODE_FACTORY == gDevRam.rx_mode){
         printk("LBT Channel[%u]:%ddBm\r\n", chan, rssi);
     }
-}
-
-int8_t RadioMatchPower(uint8_t spiIdx, int8_t power)
-{
-    return power;
-}
-
-ChipType_t RadioMatchChip(uint8_t spiIdx)
-{
-    return CHIP_1268;
 }
 
 void DevGetVol(uint32_t param1, uint16_t param2)

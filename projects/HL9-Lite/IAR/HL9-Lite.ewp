@@ -3,7 +3,7 @@
 <project>
   <fileVersion>2</fileVersion>
   <configuration>
-    <name>HL10-TX</name>
+    <name>HL9-TX</name>
     <toolchain>
       <name>ARM</name>
     </toolchain>
@@ -17,15 +17,15 @@
         <debug>0</debug>
         <option>
           <name>ExePath</name>
-          <state>HL10-TX\Exe</state>
+          <state>HL9-TX\Exe</state>
         </option>
         <option>
           <name>ObjPath</name>
-          <state>HL10-TX\Obj</state>
+          <state>HL9-TX\Obj</state>
         </option>
         <option>
           <name>ListPath</name>
-          <state>HL10-TX\List</state>
+          <state>HL9-TX\List</state>
         </option>
         <option>
           <name>GEndianMode</name>
@@ -34,20 +34,20 @@
         <option>
           <name>Input variant</name>
           <version>3</version>
-          <state>6</state>
+          <state>0</state>
         </option>
         <option>
           <name>Input description</name>
-          <state>No specifier n, no float nor long long, no scan set, no assignment suppressing.</state>
+          <state>Automatic choice of formatter.</state>
         </option>
         <option>
           <name>Output variant</name>
           <version>2</version>
-          <state>7</state>
+          <state>0</state>
         </option>
         <option>
           <name>Output description</name>
-          <state>No specifier a, A, no specifier n, no float nor long long, no flags.</state>
+          <state>Automatic choice of formatter.</state>
         </option>
         <option>
           <name>GOutputBinary</name>
@@ -93,7 +93,7 @@
         </option>
         <option>
           <name>GenLowLevelInterface</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>GEndianModeBE</name>
@@ -618,11 +618,11 @@
         </option>
         <option>
           <name>OCOutputOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>HL10-Lite.hex</state>
+          <state>M-HL9V3.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -789,7 +789,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$PROJ_DIR$\..\..\..\bsp\libs\hl10-lite.a</state>
+          <state>$PROJ_DIR$\..\..\..\bsp\libs\hl9-lite.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -978,7 +978,7 @@
     </settings>
   </configuration>
   <configuration>
-    <name>HL10-RX</name>
+    <name>HL9-RX</name>
     <toolchain>
       <name>ARM</name>
     </toolchain>
@@ -992,15 +992,15 @@
         <debug>0</debug>
         <option>
           <name>ExePath</name>
-          <state>HL10-RX\Exe</state>
+          <state>HL9-RX\Exe</state>
         </option>
         <option>
           <name>ObjPath</name>
-          <state>HL10-RX\Obj</state>
+          <state>HL9-RX\Obj</state>
         </option>
         <option>
           <name>ListPath</name>
-          <state>HL10-RX\List</state>
+          <state>HL9-RX\List</state>
         </option>
         <option>
           <name>GEndianMode</name>
@@ -1009,20 +1009,20 @@
         <option>
           <name>Input variant</name>
           <version>3</version>
-          <state>6</state>
+          <state>0</state>
         </option>
         <option>
           <name>Input description</name>
-          <state>No specifier n, no float nor long long, no scan set, no assignment suppressing.</state>
+          <state>Automatic choice of formatter.</state>
         </option>
         <option>
           <name>Output variant</name>
           <version>2</version>
-          <state>7</state>
+          <state>0</state>
         </option>
         <option>
           <name>Output description</name>
-          <state>No specifier a, A, no specifier n, no float nor long long, no flags.</state>
+          <state>Automatic choice of formatter.</state>
         </option>
         <option>
           <name>GOutputBinary</name>
@@ -1068,7 +1068,7 @@
         </option>
         <option>
           <name>GenLowLevelInterface</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>GEndianModeBE</name>
@@ -1594,11 +1594,11 @@
         </option>
         <option>
           <name>OCOutputOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>HL10-Lite.hex</state>
+          <state>M-HL9V3.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -1765,7 +1765,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$PROJ_DIR$\..\..\..\bsp\libs\hl10-lite.a</state>
+          <state>$PROJ_DIR$\..\..\..\bsp\libs\hl9-lite.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>

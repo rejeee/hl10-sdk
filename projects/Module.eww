@@ -7,6 +7,12 @@
   <project>
     <path>$WS_DIR$\HL10-Lite\IAR\HL10-Lite.ewp</path>
   </project>
+  <project>
+    <path>$WS_DIR$\HL9\IAR\HL9.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\HL9-Lite\IAR\HL9-Lite.ewp</path>
+  </project>
   <batchBuild/>
 </workspace>
 

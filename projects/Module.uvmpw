@@ -8,6 +8,14 @@
   <WorkspaceName>WorkSpace</WorkspaceName>
 
   <project>
+    <PathAndName>.\HL9\Keil\HL9.uvprojx</PathAndName>
+  </project>
+
+  <project>
+    <PathAndName>.\HL9-Lite\Keil\HL9-Lite.uvprojx</PathAndName>
+  </project>
+
+  <project>
     <PathAndName>.\HL10\Keil\HL10.uvprojx</PathAndName>
     <NodeIsActive>1</NodeIsActive>
     <NodeIsExpanded>1</NodeIsExpanded>

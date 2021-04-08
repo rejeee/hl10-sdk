@@ -8,6 +8,7 @@
  * @author  Felix
  ******************************************************************************/
 #include "app.h"
+#include "app_at.h"
 #include "app_mac.h"
 #include "at/at_config.h"
 #include "radio/sx12xx_common.h"
@@ -15,11 +16,13 @@
 #define TASK_PERIOD_MS      100U    /* unit ms */
 
 /* Code Version */
-char *gCodeVers = "1007";
+char *gCodeVers = "1025";
 
 /****
 Global Variables
 ****/
+volatile bool   gEnableRadioRx  = true;
+bool gPaEnable = false;
 
 /****
 Local Variables
@@ -38,9 +41,31 @@ static bool AppTaskInit(void)
 {
     bool result = true;
 
+    APP_FeedDog();
     result = AppMacTask();
 
+    if(result){
+        APP_FeedDog();
+        result = AppATTask();
+    }
+
     return result;
+}
+
+static void AppTaskManager(void)
+{
+    BSP_OS_MutexLock(&gParam.mutex, OS_ALWAYS_DELAY);
+    UserCheckAT();
+    BSP_OS_MutexUnLock(&gParam.mutex);
+#if 0
+    static int count = 0;
+    stc_rtc_time_t stcTime;
+    if(count++%10 == 0){
+        BSP_RTC_GetDateTime(&stcTime);
+        printk("%d-%d-%d %d:%d:%d\r\n", stcTime.u8Year + 2000,stcTime.u8Month,stcTime.u8Day,
+            stcTime.u8Hour,stcTime.u8Minute,stcTime.u8Second);
+    }
+#endif
 }
 
 /****
@@ -55,7 +80,7 @@ bool AppTaskCreate(void)
     /* watchdog timeout 6s refer MCU datasheet */
     System_HidePinInit(HC32L13xFxxx);
 
-    result = PlatformInit(0);
+    result = PlatformInit(6);
 
     /* Low Energy Timer and DeepSleep init */
     if(false == BSP_LPowerInit(false)){
@@ -63,7 +88,7 @@ bool AppTaskCreate(void)
     }
 
     success = DevUserInit();
-    if(gParam.dev.vol < 2000 && RJ_ERR_OK == result){
+    if(gParam.dev.vol < 2000){
         result = RJ_ERR_BAT;
     }
 
@@ -103,8 +128,8 @@ bool AppTaskCreate(void)
         return false;
     }
 
-    printk("LoRa %s SDK, HAL V%u, XTL:%d, Firmware V%s\r\n", MODULE_NAME,
-           RadioHalVersion(), gParam.dev.extl, gCodeVers);
+    printk("LoRa %s SDK, HAL V%u:%u, XTL:%d, Firmware V%s\r\n", MODULE_NAME,
+           RadioHalVersion(), AT_Version(), gParam.dev.extl, gCodeVers);
 
     if(success) {
         success = AppTaskInit();
@@ -115,11 +140,12 @@ bool AppTaskCreate(void)
 
 void AppTaskExtends(void)
 {
-    DevGetVol(0,0);
-
     while (1) {
         APP_FeedDog();
         AppTaskManager();
         osDelayMs(TASK_PERIOD_MS);
+        if(gDevFlash.config.lcp <= 0){
+            LED_OFF(LED_RF_RX);
+        }
     }
 }

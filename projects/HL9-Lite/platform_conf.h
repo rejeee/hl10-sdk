@@ -40,6 +40,7 @@ extern "C" {
 /****
 Global Variables
 ****/
+extern bool gPaEnable;
 
 /****
 Global Functions

@@ -15,6 +15,8 @@ extern "C" {
 /**
  *  Debug Port Settings
  */
+#define DBG_UART_TIMEOUT        5U
+#define DBG_UART_SIZE           255
 #define DBG_UART_IDX            BSP_LPUART0
 #define DBG_GPIO                GpioPortB
 #define DBG_TX_PIN              GpioPin0    /* TX: PB00 */
@@ -40,6 +42,9 @@ extern "C" {
 /****
 Global Variables
 ****/
+extern osMessageQId     gUartQ;
+extern osPoolId         gMemPool;
+extern bool gPaEnable;
 
 /****
 Global Functions
@@ -48,7 +53,8 @@ bool DevUserInit(void);
 
 void DevGetVol(uint32_t param1, uint16_t param2);
 
-void AppTaskManager(void);
+void AppMacQueryCSQ(int16_t *rssi, int8_t *snr);
+bool AppMacUpdateRx(bool update);
 
 #if defined(__cplusplus)
 }
