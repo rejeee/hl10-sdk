@@ -24,6 +24,7 @@ bool BSP_RTC_Init(const BSP_RTC_TypeDef *ptr);
 void BSP_RTC_DeInit(void);
 
 void BSP_RTC_WakeUp(uint32_t secs);
+void BSP_RTC_WakeUpMs(uint32_t ms);
 
 /**
  * @brief Get the current time from RTC registers

@@ -64,12 +64,36 @@ static void RadioPrintRecv(bool format)
     osExitCritical();
 }
 
+static void AppRxProcess(uint8_t spiIdx)
+{
+    uint32_t status = AT_STATUS_NONE;
+
+    if(gDevFlash.config.lcp > 0){
+        status = MacRadio_CadProcess(spiIdx, true);
+    } else {
+        status = MacRadio_RxProcess(spiIdx, false);
+    }
+
+    if(status == AT_STATUS_OK){
+        if(gDevFlash.config.lcp <= 0){
+            LED_ON(LED_RF_RX);
+        }
+        RadioPrintRecv((RX_MODE_FACTORY == gDevRam.rx_mode));
+    } else if(status == AT_STATUS_RX_ERR) {
+        if(RX_MODE_FACTORY == gDevRam.rx_mode){
+            printk("CRC ERR,SNR:%d, RSSI:%ddBm,Calc:%d\r\n",
+                   sMacParam.qos.snr, sMacParam.qos.rssi, sMacParam.qos.freqerr);
+        }
+    }
+
+    return;
+}
+
 /**
  * @brief  MAC task handler
  */
 static void MacTaskHandler(void const *p_arg)
 {
-    uint32_t status = AT_STATUS_NONE;
     uint8_t spiIdx = RADIO_TRX_SPI;
 
     while (1) {
@@ -84,34 +108,13 @@ static void MacTaskHandler(void const *p_arg)
         if(gEnableRadioRx){
             if(gParam.mode){
                 if(RX_MODE_NONE != gDevRam.rx_mode){
-                    if(gDevFlash.config.lcp > 0){
-                        status = MacRadio_CadProcess(spiIdx, true);
-                    } else {
-                        status = MacRadio_RxProcess(spiIdx, false);
-                    }
+                    AppRxProcess(spiIdx);
                 } else {
                     osDelayMs(10);
                 }
             } else {
-                if(gDevFlash.config.lcp > 0){
-                    status = MacRadio_CadProcess(spiIdx, true);
-                } else {
-                    status = MacRadio_RxProcess(spiIdx, false);
-                }
+                AppRxProcess(spiIdx);
             }
-
-            if(status == AT_STATUS_OK){
-                if(gDevFlash.config.lcp <= 0){
-                    LED_ON(LED_RF_RX);
-                }
-                RadioPrintRecv((RX_MODE_FACTORY == gDevRam.rx_mode));
-            } else if(status == AT_STATUS_RX_ERR) {
-                if(RX_MODE_FACTORY == gDevRam.rx_mode){
-                    printk("CRC ERR,SNR:%d, RSSI:%ddBm,Calc:%d\r\n",
-                           sMacParam.qos.snr, sMacParam.qos.rssi, sMacParam.qos.freqerr);
-                }
-            }
-            status = AT_STATUS_NONE;
         } else {
             osDelayMs(10);
         }
@@ -168,7 +171,9 @@ uint32_t AT_TxFreq(uint32_t freq, uint8_t *buf, uint32_t len)
     uint32_t ticks = rt_time_get();
 
     sMacParam.freq = freq;
+    BSP_WatchdogEnable(0);
     status = MacRadio_TxProcess(RADIO_TRX_SPI, buf, len, &sMacParam);
+    BSP_WatchdogEnable(1);
     ticks = rt_time_get() - ticks;
 
     if(ticks < sOnAirMs/2){
@@ -235,4 +240,3 @@ void AppMacQueryCSQ(int16_t *rssi, int8_t *snr)
     *snr = sMacParam.qos.snr;
     return;
 }
-

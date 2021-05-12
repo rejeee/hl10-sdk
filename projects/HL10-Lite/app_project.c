@@ -15,7 +15,7 @@
 #define TASK_PERIOD_MS      100U    /* unit ms */
 
 /* Code Version */
-char *gCodeVers = "1007";
+char *gCodeVers = "1008";
 
 /****
 Global Variables
@@ -115,8 +115,6 @@ bool AppTaskCreate(void)
 
 void AppTaskExtends(void)
 {
-    DevGetVol(0,0);
-
     while (1) {
         APP_FeedDog();
         AppTaskManager();

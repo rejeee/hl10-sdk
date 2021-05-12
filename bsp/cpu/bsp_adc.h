@@ -62,5 +62,6 @@ uint32_t BSP_ADC_Sample(const BSP_ADC_IDX adcIdx, uint8_t ch);
  * @return unit is 0.01 degree
  */
 int BSP_ADC_CPU_Teamp(int val);
+uint32_t BSP_ADC_VDD(void);
 
 #endif

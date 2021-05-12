@@ -65,7 +65,6 @@ static void App_SoftReset(void)
 {
     AppAtResp("\r\nOK\r\n");
     NVIC_SystemReset();
-    return;
 }
 
 static void App_Response(uint32_t status)
@@ -206,6 +205,9 @@ uint32_t AT_TxProcess(uint8_t opts, uint8_t *buf, uint32_t len)
     uint32_t status = AT_STATUS_OK;
 
     switch(opts){
+    case 0:
+        status = AT_TxFreq(0, buf, len);
+        break;
     case 1:
         if(!DevCfg_UserUpdate(buf, len)){
             status = AT_STATUS_FLASH_ERR;
@@ -215,15 +217,17 @@ uint32_t AT_TxProcess(uint8_t opts, uint8_t *buf, uint32_t len)
         /* TODO: set customer parameters with AT+CMD =<x> */
         status = AT_STATUS_UNUSED;
         break;
-    case 0:
     default:
-        status = AT_TxFreq(0, buf, len);
+        status = AT_STATUS_UNUSED;
         break;
     }
 
     return status;
 }
 
+/**
+ * @brief  Create the AT task
+ */
 bool AppATTask(void)
 {
     bool result = false;

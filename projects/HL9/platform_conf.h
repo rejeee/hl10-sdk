@@ -44,7 +44,7 @@ Global Variables
 ****/
 extern osMessageQId     gUartQ;
 extern osPoolId         gMemPool;
-extern bool gPaEnable;
+extern bool             gPaEnable;
 
 /****
 Global Functions

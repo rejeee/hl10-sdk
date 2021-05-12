@@ -54,24 +54,6 @@ static BSP_ADC_TypeDef sADCConfig = {
     .single = 1
 };
 
-void Rtc_IRQHandler(void)
-{
-    /* @todo */
-    /* user code */
-    if(Rtc_GetPridItStatus() == TRUE){
-        Rtc_ClearPrdfItStatus();
-    }
-}
-
-/* This is interrupt handler */
-void LpTim_IRQHandler(void)
-{
-    if (TRUE == Lptim_GetItStatus(M0P_LPTIMER)) {
-        Lptim_ClrItStatus(M0P_LPTIMER);
-        BSP_LPowerIRQHandler();
-    }
-}
-
 static void DevUpdateAT(void)
 {
     if(gParam.aswitch){
@@ -120,7 +102,12 @@ void UserInitGPIO(void)
     DevUpdateAT();
 
     /* unused GPIO diabled */
+    gpioCfg.enPu = GpioPuDisable;
+    gpioCfg.enPd = GpioPdEnable;
     Gpio_Init(UNUSED_GPIO, UNUSED_PIN, &gpioCfg);
+    Gpio_Init(GpioPortA, GpioPin2, &gpioCfg);
+    Gpio_Init(GpioPortB, GpioPin1, &gpioCfg);
+
     /* Hardware version */
     Gpio_Init(UPA_GPIO, UPA_PIN, &gpioCfg);
     Gpio_Init(GpioPortB, GpioPin4, &gpioCfg);
@@ -129,8 +116,7 @@ void UserInitGPIO(void)
     Gpio_Init(GpioPortD, GpioPin1, &gpioCfg);
     Gpio_Init(GpioPortD, GpioPin3, &gpioCfg);
 
-    Gpio_Init(GpioPortA, GpioPin2, &gpioCfg);
-    Gpio_Init(GpioPortB, GpioPin1, &gpioCfg);
+    LED_Enable(true);
 }
 
 /**
@@ -150,6 +136,24 @@ void PortB_IRQHandler(void)
     }
 }
 
+/* This is interrupt handler */
+void LpTim_IRQHandler(void)
+{
+    if (TRUE == Lptim_GetItStatus(M0P_LPTIMER)) {
+        Lptim_ClrItStatus(M0P_LPTIMER);
+        BSP_LPowerIRQHandler();
+    }
+}
+
+void Rtc_IRQHandler(void)
+{
+    /* @todo */
+    /* user code */
+    if(Rtc_GetPridItStatus() == TRUE){
+        Rtc_ClearPrdfItStatus();
+    }
+}
+
 /**
  * @brief radio hal API implemetation
  *
@@ -163,6 +167,23 @@ void RadioDelay(uint32_t ms)
 void RadioDelayUs(uint32_t us)
 {
     BSP_ClockdelayUs(us);
+}
+
+void RadioLBTLog(uint8_t chan, int rssi)
+{
+    if(RX_MODE_FACTORY == gDevRam.rx_mode){
+        printk("LBT Channel[%u]:%ddBm\r\n", chan, rssi);
+    }
+}
+
+int8_t RadioMatchPower(uint8_t spiIdx, int8_t power)
+{
+    return power;
+}
+
+ChipType_t RadioMatchChip(uint8_t spiIdx)
+{
+    return CHIP_1268;
 }
 
 /**
@@ -279,12 +300,34 @@ void DevCfg_Display(uint8_t uartIdx)
     rps_t rps = gDevFlash.config.rps;
     uint32_t freq  = gDevFlash.config.txfreq;
     char* bwstr = NULL;
+    char* modemstr = NULL;
     uint8_t ldrtx = 0;
     uint8_t ldrrx = 0;
     int8_t txpow = gDevFlash.config.txpow;
     bool notAes = binIsTag(0x00, gDevFlash.config.appKey, 16);
     ldrtx = (gDevFlash.config.rps.lowRate >> 2)&0x03;
     ldrrx = gDevFlash.config.rps.lowRate&0x03;
+
+    switch(gDevFlash.config.rps.modem){
+    case MODEM_FSK:
+        modemstr = "FSK";
+        break;
+    case MODEM_LORA:
+        modemstr = "LORA";
+        break;
+    case MODEM_RANGING:
+        modemstr = "RANGING";
+        break;
+    case MODEM_FLRC:
+        modemstr = "FLRC";
+        break;
+    case MODEM_BLE:
+        modemstr = "BLE";
+        break;
+    default:
+        modemstr = "UNKNOWN";
+        break;
+    }
 
     switch(rps.bw){
     case RF_BANDWIDTH_7D8:
@@ -345,7 +388,7 @@ void DevCfg_Display(uint8_t uartIdx)
            "PREM:\t%u,%u\r\nFIX:\t%u,%u\r\nCRC:\t%s\r\nTIQ:\t%s\r\nRIQ:\t%s\r\n",
            txpow,bwstr,
            gDevFlash.config.txsf,gDevFlash.config.rxsf,rps.cr + 4,
-           gDevFlash.config.rps.modem?"LORA":"FSK",
+           modemstr,
            gDevFlash.config.syncword,
            gDevFlash.config.tprem,gDevFlash.config.rprem,
            gDevFlash.config.tfix,gDevFlash.config.rfix,
@@ -424,23 +467,6 @@ bool DevUserInit(void)
     gParam.dtime = BSP_RTC_GetSecs();
 
     return success;
-}
-
-void RadioLBTLog(uint8_t chan, int rssi)
-{
-    if(RX_MODE_FACTORY == gDevRam.rx_mode){
-        printk("LBT Channel[%u]:%ddBm\r\n", chan, rssi);
-    }
-}
-
-int8_t RadioMatchPower(uint8_t spiIdx, int8_t power)
-{
-    return power;
-}
-
-ChipType_t RadioMatchChip(uint8_t spiIdx)
-{
-    return CHIP_1268;
 }
 
 void DevGetVol(uint32_t param1, uint16_t param2)

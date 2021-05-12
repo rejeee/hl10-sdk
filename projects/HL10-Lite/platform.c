@@ -53,16 +53,6 @@ static BSP_ADC_TypeDef sADCConfig = {
 };
 
 
-/* This is interrupt handler */
-void LpTim_IRQHandler(void)
-{
-    if (TRUE == Lptim_GetItStatus(M0P_LPTIMER)) {
-        Lptim_ClrItStatus(M0P_LPTIMER);
-        BSP_LPowerIRQHandler();
-    }
-}
-
-
 /* UART user callback */
 static void DebugCallback(uint32_t userData)
 {
@@ -94,7 +84,12 @@ void UserInitGPIO(void)
     Gpio_EnableIrq(UKEY_GPIO, UKEY_PIN, GpioIrqRising);
 
     /* unused GPIO diabled */
+    gpioCfg.enPu = GpioPuDisable;
+    gpioCfg.enPd = GpioPdEnable;
     Gpio_Init(UNUSED_GPIO, UNUSED_PIN, &gpioCfg);
+    Gpio_Init(GpioPortA, GpioPin2, &gpioCfg);
+    Gpio_Init(GpioPortB, GpioPin1, &gpioCfg);
+
     /* Hardware version */
     Gpio_Init(UPA_GPIO, UPA_PIN, &gpioCfg);
     Gpio_Init(GpioPortB, GpioPin4, &gpioCfg);
@@ -102,9 +97,7 @@ void UserInitGPIO(void)
     Gpio_Init(GpioPortD, GpioPin0, &gpioCfg);
     Gpio_Init(GpioPortD, GpioPin1, &gpioCfg);
     Gpio_Init(GpioPortD, GpioPin3, &gpioCfg);
-
-    Gpio_Init(GpioPortA, GpioPin2, &gpioCfg);
-    Gpio_Init(GpioPortB, GpioPin1, &gpioCfg);
+    LED_Enable(true);
 }
 
 /**
@@ -124,6 +117,15 @@ void PortB_IRQHandler(void)
     }
 }
 
+/* This is interrupt handler */
+void LpTim_IRQHandler(void)
+{
+    if (TRUE == Lptim_GetItStatus(M0P_LPTIMER)) {
+        Lptim_ClrItStatus(M0P_LPTIMER);
+        BSP_LPowerIRQHandler();
+    }
+}
+
 /**
  * @brief radio hal API implemetation
  *
@@ -137,6 +139,23 @@ void RadioDelay(uint32_t ms)
 void RadioDelayUs(uint32_t us)
 {
     BSP_ClockdelayUs(us);
+}
+
+void RadioLBTLog(uint8_t chan, int rssi)
+{
+    if(RX_MODE_FACTORY == gDevRam.rx_mode){
+        printk("LBT Channel[%u]:%ddBm\r\n", chan, rssi);
+    }
+}
+
+int8_t RadioMatchPower(uint8_t spiIdx, int8_t power)
+{
+    return power;
+}
+
+ChipType_t RadioMatchChip(uint8_t spiIdx)
+{
+    return CHIP_1268;
 }
 
 /**
@@ -210,23 +229,6 @@ bool DevUserInit(void)
     return success;
 }
 
-void RadioLBTLog(uint8_t chan, int rssi)
-{
-    if(RX_MODE_FACTORY == gDevRam.rx_mode){
-        printk("LBT Channel[%u]:%ddBm\r\n", chan, rssi);
-    }
-}
-
-int8_t RadioMatchPower(uint8_t spiIdx, int8_t power)
-{
-    return power;
-}
-
-ChipType_t RadioMatchChip(uint8_t spiIdx)
-{
-    return CHIP_1268;
-}
-
 void DevGetVol(uint32_t param1, uint16_t param2)
 {
     uint32_t adc = 0;
@@ -278,6 +280,11 @@ void BSP_WatchdogInit(uint32_t secs)
 }
 
 void BSP_WatchdogFeed(void)
+{
+    /** @todo: */
+}
+
+void BSP_WatchdogEnable(uint8_t enable)
 {
     /** @todo: */
 }

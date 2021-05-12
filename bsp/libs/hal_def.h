@@ -30,7 +30,7 @@ Type Defines
 
 /** @brief the callback for user-specific function. */
 typedef void (*func_ptr)(void);
-typedef void (* lpwan_func_t)(uint32_t addr, uint16_t seq);
+typedef void (*lpwan_func_t)(uint32_t addr, uint16_t seq);
 
 /**
  * @brief UART baudrate type define.

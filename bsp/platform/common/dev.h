@@ -85,7 +85,7 @@ uint32_t PlatformSleep(uint32_t secs);
 bool PlatformSleepMs(uint32_t ms);
 
 /* Low Battery detected */
-void PlatformLvdInit();
+void PlatformLvdInit(void);
 
 /**
  * @FIXME:The following code should be customized by the user

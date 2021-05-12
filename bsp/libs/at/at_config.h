@@ -27,10 +27,12 @@ Definitions
  *   4 bit:  0 PA Boost, 1 RFO
  *   5 bit:  0 scan by level , 1 scan by cad
  *   6 bit:  0 default , 1 show raw data
+ *   7 bit:  0 default , 1 RX with CAD
  */
 #define TYPE_BITS_RFO            4
 #define TYPE_BITS_SCAN           5
 #define TYPE_BITS_RAW            6
+#define TYPE_BITS_RCAD           7
 
 /** @name radio defines */
 /*@{*/

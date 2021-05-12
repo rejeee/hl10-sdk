@@ -54,12 +54,11 @@ Global Functions
 /**
  * @brief Parse LGW Recv data which is payload
  *
- * @param   param    Customizing parameters, distinguishing applications
- *                   7th bit is ACK flag
+ * @param   param    Customizing parameters
  *
  * @param   ptr     the pointer for all operating parameters
  *
- * @return  1 currently, other: TBD
+ * @return  1 success, 0 no data or inliad, -1 AES decode fail
  */
 #ifndef USE_NO_LPWAN
 int DevLgwRecv(uint8_t param, struct mac_lorawan_t *ptr);

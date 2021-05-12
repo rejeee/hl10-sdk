@@ -15,12 +15,13 @@
 
 #define TASK_PERIOD_MS      100U    /* unit ms */
 
-/* Code Version */
-char *gCodeVers = "1007";
-
 /****
 Global Variables
 ****/
+
+/* Code Version */
+char *gCodeVers = "1008";
+
 volatile bool   gEnableRadioRx  = true;
 
 /****
@@ -87,7 +88,7 @@ bool AppTaskCreate(void)
     }
 
     success = DevUserInit();
-    if(gParam.dev.vol < 2000 && RJ_ERR_OK == result){
+    if(gParam.dev.vol < 2000u && RJ_ERR_OK == result){
         result = RJ_ERR_BAT;
     }
 
@@ -106,6 +107,9 @@ bool AppTaskCreate(void)
         case RJ_ERR_CHK:
             errstr ="sign";
             break;
+        case RJ_ERR_RF:
+            errstr ="radio";
+            break;
         case RJ_ERR_BAT:
             errstr ="LowBat";
             break;
@@ -115,8 +119,9 @@ bool AppTaskCreate(void)
                MODULE_NAME, gCodeVers, errstr, gParam.dev.vol);
 
         if(gDevFlash.config.lcp <= 0){
-            osDelayMs(1000);
+            BSP_DelayMsWithDog(1000);
         } else {
+            osDelayMs(10);
             PlatformSleep(1);
         }
 

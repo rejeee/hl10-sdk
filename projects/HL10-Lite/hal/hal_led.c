@@ -17,20 +17,16 @@
 void LED_Enable(bool enable)
 {
     stc_gpio_cfg_t gpioCfg;
-    DDL_ZERO_STRUCT(gpioCfg);
-
     if(enable){
         Sysctrl_SetPeripheralGate(SysctrlPeripheralGpio, TRUE);
+        DDL_ZERO_STRUCT(gpioCfg);
+
         gpioCfg.enDir = GpioDirOut;
         Gpio_Init(LED_N_GPIO, LED1_PIN, &gpioCfg);
         Gpio_Init(LED_N_GPIO, LED2_PIN, &gpioCfg);
-
-        LED_OFF(LED_RF_TX);
-        LED_OFF(LED_RF_RX);
-    } else {
-        LED_OFF(LED_RF_TX);
-        LED_OFF(LED_RF_RX);
     }
+    LED_OFF(LED_RF_TX);
+    LED_OFF(LED_RF_RX);
 }
 
 void LED_ON(uint32_t led_num)

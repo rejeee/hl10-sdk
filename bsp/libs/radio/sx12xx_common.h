@@ -147,11 +147,11 @@ struct sx12xx_rx_t
 typedef union
 {
     struct {
-        uint8_t cfg     : 1;    /**> [0 ignore radio settings, 1 reconfig radio settings ] */
-        uint8_t notx    : 1;    /**> [0 direct send after config, 1 no send after config ] */
-        uint8_t errata  : 1;    /**> [0 , 1 with errata ] */
+        uint32_t cfg    : 1;    /**> [0 ignore radio settings, 1 reconfig radio settings ] */
+        uint32_t notx   : 1;    /**> [0 direct send after config, 1 no send after config ] */
+        uint32_t errata : 1;    /**> [0 , 1 with errata ] */
     } bits;
-    uint8_t value;
+    uint32_t value;
 } ConfigOptUnion;
 
 /**
@@ -189,6 +189,8 @@ ChipType_t RadioMatchChip(uint8_t spiIdx);
  */
 void RadioAntSwitch(uint8_t spiIdx, bool rx);
 
+void RadioWaitIdle(uint8_t spiIdx);
+
 /**
  * @brief ANT low power set
  *
@@ -197,7 +199,7 @@ void RadioAntSwitch(uint8_t spiIdx, bool rx);
 void RadioAntLowPower(uint8_t spiIdx, uint8_t status);
 
 uint16_t RadioReadFlags(uint8_t spiIdx, uint16_t irqmask, bool clear);
-uint16_t RadioGetDeviceErrors(uint8_t spiIdx);
+uint32_t RadioGetDeviceErrors(uint8_t spiIdx);
 void RadioClearDeviceErrors(uint8_t spiIdx);
 
 uint16_t RadioChipVersion(uint8_t spiIdx);
