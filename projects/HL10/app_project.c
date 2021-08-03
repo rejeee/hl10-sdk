@@ -20,9 +20,10 @@ Global Variables
 ****/
 
 /* Code Version */
-char *gCodeVers = "1008";
+char *gCodeVers = "1009";
 
 volatile bool   gEnableRadioRx  = true;
+bool gSignOk = true;
 
 /****
 Local Variables
@@ -66,6 +67,21 @@ static void AppTaskManager(void)
             stcTime.u8Hour,stcTime.u8Minute,stcTime.u8Second);
     }
 #endif
+
+    if(false == gSignOk){
+        printk("Device[");
+        for(uint8_t i = 0; i < 10; i++){
+            printk("%02X", REG_READ8(0x00100E74 + i));
+        }
+        printk("] no signed data\r\n");
+
+        if(gDevFlash.config.lcp <= 0){
+            BSP_DelayMsWithDog(1000);
+        } else {
+            osDelayMs(10);
+            PlatformSleep(3);
+        }
+    }
 }
 
 /****
@@ -106,6 +122,8 @@ bool AppTaskCreate(void)
             break;
         case RJ_ERR_CHK:
             errstr ="sign";
+            success = AppATTask();
+            gSignOk = false;
             break;
         case RJ_ERR_RF:
             errstr ="radio";
@@ -125,18 +143,15 @@ bool AppTaskCreate(void)
             PlatformSleep(1);
         }
 
-        return false;
-    }
-
-    if(false == success){
-        return false;
-    }
-
-    printk("LoRa %s SDK, HAL V%u:%u, XTL:%d, Firmware V%s\r\n", MODULE_NAME,
-           RadioHalVersion(), AT_Version(), gParam.dev.extl, gCodeVers);
-
-    if(success) {
-        success = AppTaskInit();
+        if(RJ_ERR_CHK != result){
+            return false;
+        }
+    } else {
+        printk("LoRa %s SDK, HAL V%u:%u, XTL:%d, Firmware V%s\r\n", MODULE_NAME,
+               RadioHalVersion(), AT_Version(), gParam.dev.extl, gCodeVers);
+        if(success) {
+            success = AppTaskInit();
+        }
     }
 
     return success;

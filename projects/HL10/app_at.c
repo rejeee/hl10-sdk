@@ -215,7 +215,19 @@ uint32_t AT_TxProcess(uint8_t opts, uint8_t *buf, uint32_t len)
         break;
     case 2:
         /* TODO: set customer parameters with AT+CMD =<x> */
-        status = AT_STATUS_UNUSED;
+        if(4 == len){
+            status = ros_rlsbf4(buf);
+            if(BSP_FlashWrite(0xFE00, &status, 1)){
+                status = AT_STATUS_OK;
+            } else {
+                status = AT_STATUS_FLASH_ERR;
+            }
+            App_Response(status);
+            osDelayMs(100);
+            NVIC_SystemReset();
+        } else {
+            status = AT_STATUS_LEN_ERR;
+        }
         break;
     default:
         status = AT_STATUS_UNUSED;
